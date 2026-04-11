@@ -191,7 +191,20 @@ async function loadUserProfile() {
         }
         
         const payload = await res.json();
-        currentUser = payload.data ? payload.data.user : payload;
+        let baseUser = payload.data ? payload.data.user : payload;
+        
+        // Fetch the perfectly merged profile info from /api/user (bypasses cache)
+        try {
+            const apiRes = await originalFetch('/api/user');
+            if (apiRes.ok) {
+                const apiUser = await apiRes.json();
+                currentUser = { ...baseUser, ...apiUser };
+            } else {
+                currentUser = baseUser;
+            }
+        } catch (e) {
+            currentUser = baseUser;
+        }
         
         if (!currentUser?.name) return;
 
@@ -208,7 +221,10 @@ async function loadUserProfile() {
         setText('hero-meta', [agePart, genPart, bloodPart].filter(Boolean).join(' · ') || 'MediSync Patient');
 
         renderTags('hero-allergies', splitCsv(currentUser.allergies), 'allergy');
-        renderTags('hero-conditions', splitCsv(currentUser.chronic_conditions), 'condition');
+        
+        // Ensure both snake_case (SQLite) and camelCase (MonoDB fallback) work
+        const conditionsStr = currentUser.chronic_conditions || currentUser.chronicConditions || '';
+        renderTags('hero-conditions', splitCsv(conditionsStr), 'condition');
     } catch (e) { console.warn('Profile load', e); }
 }
 
@@ -784,48 +800,75 @@ function renderTimelineRows(grouped, containerId) {
                 : `<div class="tl-row-icon" style="background:${color}">${emoji}</div>`;
 
             const docMeta = (ev.doctor_name || ev.hospital)
-                ? `<div class="tl-doc-meta">${ev.doctor_name ? `<span>👨‍⚕️ ${esc(ev.doctor_name)}</span>` : ''}${ev.hospital ? `<span>🏥 ${esc(ev.hospital)}</span>` : ''}</div>`
+                ? `<div class="tl-doc-meta" style="display:flex;gap:6px;flex-wrap:wrap">
+                     ${ev.doctor_name ? `<span style="background:var(--neutral-100);padding:3px 8px;border-radius:12px;font-size:11.5px;font-weight:500;color:var(--neutral-700)">👨‍⚕️ ${esc(ev.doctor_name)}</span>` : ''}
+                     ${ev.hospital ? `<span style="background:var(--neutral-100);padding:3px 8px;border-radius:12px;font-size:11.5px;font-weight:500;color:var(--neutral-700)">🏥 ${esc(ev.hospital)}</span>` : ''}
+                   </div>`
                 : '';
 
             const diagHtml = ev.diagnosis
-                ? `<div class="tl-diagnosis">🩺 ${esc(ev.diagnosis)}</div>` : '';
+                ? `<div class="tl-diagnosis" style="border-left: 3px solid var(--primary-400); background: var(--primary-50); padding: 8px 12px; font-weight: 500; color: var(--primary-800); border-radius: 0 6px 6px 0; margin-top: 10px; font-size: 13px;">🩺 ${esc(ev.diagnosis)}</div>` : '';
 
             const meds = ev.medications_list || [];
             const medsHtml = meds.length
-                ? `<div class="tl-chips-row">${meds.slice(0, 5).map(m => `<span class="tl-chip tl-chip-med">💊 ${esc(m.name)}</span>`).join('')}</div>` : '';
+                ? `<div class="tl-chips-row" style="margin-top: 10px">${meds.slice(0, 5).map(m => `<span class="tl-chip tl-chip-med">💊 ${esc(m.name)}</span>`).join('')}</div>` : '';
 
             const labs = ev.lab_tests_list || [];
             const labsHtml = labs.length
-                ? `<div class="tl-chips-row">${labs.slice(0, 4).map(l => `<span class="tl-chip ${l.abnormal ? 'tl-chip-abnormal' : 'tl-chip-lab'}">🧪 ${esc(l.name)}: ${esc(String(l.value))} ${esc(l.unit || '')}${l.abnormal ? ' ⚠' : ''}</span>`).join('')}</div>` : '';
+                ? `<div class="tl-chips-row" style="margin-top: 10px">${labs.slice(0, 4).map(l => `<span class="tl-chip ${l.abnormal ? 'tl-chip-abnormal' : 'tl-chip-lab'}">🧪 ${esc(l.name)}: ${esc(String(l.value))} ${esc(l.unit || '')}${l.abnormal ? ' ⚠' : ''}</span>`).join('')}</div>` : '';
+
+            let fullImageHtml = '';
+            let showThumbnail = true;
+            if (containerId === 'tests-tab' && imgUrl) {
+                showThumbnail = false;
+                fullImageHtml = `
+                <div style="margin-top: 12px; border-radius: 8px; overflow: hidden; border: 1px solid var(--neutral-200); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'" onclick="event.stopPropagation();openImagePreview('${imgUrl}')">
+                    <img src="${imgUrl}" style="width: 100%; max-height: 380px; object-fit: cover; background: #000; border-bottom: 1px solid var(--neutral-200); display: block;" alt="Test Image">
+                    <div style="padding: 10px; font-size: 11.5px; text-align: center; background: #f8fafc; color: var(--neutral-600); font-weight: 500; display:flex; justify-content:center; align-items:center; gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                        Click to securely enlarge X-Ray or Test Page
+                    </div>
+                </div>`;
+            }
 
             row.innerHTML = `
-              ${leftCol}
-              <div class="tl-row-info">
-                <h4>${esc(ev.title || '[No Title]')}</h4>
-                ${docMeta}
+              ${showThumbnail ? leftCol : ''}
+              <div class="tl-row-info" style="display: flex; flex-direction: column; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                    <div style="padding-right: 16px;">
+                        <h4 style="margin:0 0 6px 0; font-size: 14.5px; font-weight: 600; color: var(--neutral-800); line-height: 1.4">${esc(ev.title || '[No Title]')}</h4>
+                        ${docMeta}
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+                        <span class="tl-row-date" style="font-size: 12px; color: var(--neutral-500); font-weight: 500; letter-spacing: 0.2px">${ev.event_date ? fmtDateMonth(ev.event_date) : ''}</span>
+                        ${badgeLabel ? `<span class="tl-type-badge tl-badge-${badgeLabel.cls}" style="padding: 3px 8px; border-radius: 12px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px">${badgeLabel.text}</span>` : ''}
+                    </div>
+                </div>
                 ${diagHtml}
-                <p class="tl-notes">${esc(ev.description || '')}</p>
+                ${fullImageHtml}
+                ${ev.description ? `<div style="margin-top: 16px;">
+                    ${containerId === 'tests-tab' ? `<span style="font-size:11px;font-weight:700;color:var(--primary-600);text-transform:uppercase;letter-spacing:0.5px">AI Context & Identified Medical Issues</span>` : ''}
+                    <p class="tl-notes" style="position: relative; padding-left: 12px; border-left: 2px solid ${containerId === 'tests-tab' ? 'var(--primary-400)' : 'var(--neutral-200)'}; line-height: 1.6; margin-top: ${containerId === 'tests-tab' ? '6px' : '12px'}; font-size: 13px; color: var(--neutral-600);">${esc(ev.description)}</p>
+                </div>` : ''}
                 ${medsHtml}
                 ${labsHtml}
-                ${isUnverified ? `<span class="tl-conf-warn">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  Unverified · Low confidence — Click Edit to fix
-                </span>` : ''}
-              </div>
-              <div class="tl-row-meta">
-                <span class="tl-row-date">${ev.event_date ? fmtDateMonth(ev.event_date) : ''}</span>
-                ${badgeLabel ? `<span class="tl-type-badge tl-badge-${badgeLabel.cls}">${badgeLabel.text}</span>` : ''}
-                <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
-                  ${ev.source_page_img ? `
-                  <button class="tl-edit-btn" title="View Source Image/Evidence" style="background:var(--neutral-800);color:#fff;border-color:var(--neutral-800);width:auto;padding:0 8px;font-size:11px;font-weight:600;" onclick="event.stopPropagation();openImagePreview('/uploads/${ev.source_page_img}')">
-                    📄 View Evidence
-                  </button>` : ''}
-                  <button class="tl-edit-btn" title="Verify Blockchain Record" style="background:var(--blue-50);color:var(--blue-600);border-color:var(--blue-200);width:auto;padding:0 8px;font-size:11px;font-weight:600" onclick="event.stopPropagation();verifyDocument('${ev.doc_id}')">
-                    🛡️ Verify
-                  </button>
-                  <button class="tl-edit-btn" title="Edit event" onclick="event.stopPropagation();openEditModal('${evId}')">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </button>
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--neutral-100);">
+                    <div class="tl-action-btns" style="display:flex; gap: 8px;">
+                        ${ev.source_page_img ? `
+                        <button class="tl-edit-btn" title="View Source Image/Evidence" style="background:var(--neutral-800);color:#fff;border-color:var(--neutral-800);width:auto;padding:5px 12px;font-size:11.5px;font-weight:600;border-radius:6px;cursor:pointer;transition: opacity 0.15s" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="event.stopPropagation();openImagePreview('/uploads/${ev.source_page_img}')">
+                            📄 View Evidence
+                        </button>` : ''}
+                        <button class="tl-edit-btn" title="Verify Blockchain Record" style="background:var(--blue-50);color:var(--blue-700);border-color:var(--blue-200);width:auto;padding:5px 12px;font-size:11.5px;font-weight:600;border-radius:6px;cursor:pointer;transition: background 0.15s" onmouseover="this.style.background='var(--blue-100)'" onmouseout="this.style.background='var(--blue-50)'" onclick="event.stopPropagation();verifyDocument('${ev.doc_id}')">
+                            🛡️ Check Integrity
+                        </button>
+                        <button class="tl-edit-btn" title="Edit event" style="padding: 5px 8px;border-radius:6px;cursor:pointer;background:#fff;border:1px solid var(--neutral-200);color:var(--neutral-600)" onmouseover="this.style.background='var(--neutral-50)'" onmouseout="this.style.background='#fff'" onclick="event.stopPropagation();openEditModal('${evId}')">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                    </div>
+                    ${isUnverified ? `<span class="tl-conf-warn" style="font-weight:600; font-size: 11px; color: #b45309; background: #fffbeb; border: 1px solid #fef3c7; padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 4px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    AI Extracted Data
+                    </span>` : ''}
                 </div>
               </div>`;
 
@@ -1317,11 +1360,53 @@ function renderPredCard(p) {
       </div>`;
 }
 
-window.openActionsModal = function(title) {
-    const actions = PRED_ACTIONS[title] || [
-        { icon: '👨‍⚕️', title: 'Consult Your Physician', desc: 'Discuss this alert with your primary care doctor at your next appointment.' },
-        { icon: '📋', title: 'Review Medical Records', desc: 'Ensure all related medical records are up to date and verified.' }
+function getDynamicActions(title) {
+    const p = allPredictions.find(x => x.title === title) || window.cachedPredictions?.find(x => x.title === title);
+    if (!p) {
+        return [
+            { icon: '👨‍⚕️', title: 'Consult Your Physician', desc: 'Discuss this alert with your primary care doctor.' },
+            { icon: '📋', title: 'Review Records', desc: 'Ensure medical records are verifiable and up to date.' }
+        ];
+    }
+
+    const txt = (p.title + ' ' + (p.body || '')).toLowerCase();
+    
+    if (txt.includes('unverified') || txt.includes('inconsistent') || txt.includes('mismatch')) {
+        return [
+            { icon: '🔍', title: 'Verify Timeline Events', desc: 'Go to your Medical Timeline and explicitly verify the extracted events against original documents.' },
+            { icon: '🗑️', title: 'Audit Medical Flow', desc: 'Review active conditions and delete any falsely extracted or massively outdated data.' }
+        ];
+    }
+    
+    if (txt.includes('drug') || txt.includes('medication') || txt.includes('regimen') || p.type === 'conflict') {
+        return [
+            { icon: '💊', title: 'Review Active Prescriptions', desc: 'Check the Medications tab for overlapping, discontinued, or vaguely-dosed prescriptions.' },
+            { icon: '👨‍⚕️', title: 'Verify with Pharmacist', desc: 'Do not adjust medications blindly. Use the "Share" tab to send this profile to your doctor.' }
+        ];
+    }
+    
+    if (p.type === 'reminder' || txt.includes('due') || txt.includes('checkup') || txt.includes('annual')) {
+        return [
+            { icon: '📅', title: 'Schedule Appointment', desc: 'Contact your health provider to book the recommended follow-up or screening.' },
+            { icon: '🔔', title: 'Set Custom Reminder', desc: 'Add this upcoming evaluation to your calendar so it does not slip your mind.' }
+        ];
+    }
+    
+    if (p.level === 'critical' || p.level === 'high') {
+        return [
+            { icon: '🚨', title: 'Immediate Clinical Review', desc: 'This is a high-risk physiological alert. Generate a Share Link and immediately consult your doctor.' },
+            { icon: '📊', title: 'Update Lab Results', desc: 'Upload your most recent lab pathology reports so the AI evaluates your current state.' }
+        ];
+    }
+
+    return [
+        { icon: '👨‍⚕️', title: 'Discuss with Doctor', desc: 'Bring this AI insight up during your next medical consultation.' },
+        { icon: '📈', title: 'Monitor Symptoms', desc: 'Keep track of any physiological changes related to this alert.' }
     ];
+}
+
+window.openActionsModal = function(title) {
+    const actions = getDynamicActions(title);
 
     const modalHtml = `
       <div class="modal-overlay" id="actions-modal" onclick="if(event.target===this)closeActionsModal()">
