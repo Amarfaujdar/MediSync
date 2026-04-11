@@ -641,11 +641,28 @@ async function toggleIntel(medName, panelId) {
     if (panel.classList.contains('open')) { panel.classList.remove('open'); return; }
     document.querySelectorAll('.med-intel-panel').forEach(p => p.classList.remove('open'));
     panel.classList.add('open');
+
+    // Retrieve history from local storage
     if (!cachedExplanations) {
-        try { cachedExplanations = await (await fetch('/api/medications/explain', { method: 'POST' })).json(); }
+        try {
+            const saved = localStorage.getItem('medisync_ai_insights');
+            cachedExplanations = saved ? JSON.parse(saved) : {};
+        } catch(e) { cachedExplanations = {}; }
+    }
+
+    // If memory/cache doesn't have it, fetch from backend
+    if (!cachedExplanations[medName]) {
+        try { 
+            const newInsights = await (await fetch('/api/medications/explain', { method: 'POST' })).json(); 
+            cachedExplanations = { ...cachedExplanations, ...newInsights };
+            // Save history
+            localStorage.setItem('medisync_ai_insights', JSON.stringify(cachedExplanations));
+        }
         catch (e) { panel.innerHTML = `<p style="color:var(--red-500);font-size:13px">Failed to reach AI service.</p>`; return; }
     }
+
     const exp = cachedExplanations[medName];
+    // Render
     setTimeout(() => {
         panel.innerHTML = exp
             ? `<div class="intel-grid">
@@ -655,7 +672,7 @@ async function toggleIntel(medName, panelId) {
                 <div class="intel-section side-effects"><h5>Side Effects</h5><p>${exp.side_effects || 'None broadly reported'}</p></div>
                </div>`
             : `<p style="color:var(--neutral-500);font-size:13px;text-align:center;padding:16px 0">No AI data for <strong>${esc(medName)}</strong>.</p>`;
-    }, 500);
+    }, 150);
 }
 
 function initTimelineTabs() {
@@ -1554,28 +1571,85 @@ window.saveSettings = async function() {
         insurance_provider: document.getElementById('set-insurance')?.value || '',
         insurance_id:       document.getElementById('set-insurance-id')?.value || '',
     };
+
+    // Bust all relevant cache entries so fresh data is fetched after save
+    ['medisync_cache_/auth/me', 'medisync_cache_/api/user'].forEach(k => localStorage.removeItem(k));
+
+    const btn = document.querySelector('#settings-view button.btn.primary[onclick="saveSettings()"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
     try {
-        const res = await fetch('/api/user', {
+        const res = await originalFetch('/api/user', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
         const updated = await res.json();
-        currentUser = { ...currentUser, ...updated, dob: updated.date_of_birth || data.date_of_birth };
+
+        // Merge server response back into currentUser (use server truth where available)
+        currentUser = {
+            ...currentUser,
+            ...updated,
+            dob: updated.date_of_birth || updated.dob || data.dob,
+            chronic_conditions: updated.chronic_conditions ?? data.chronic_conditions,
+            allergies: updated.allergies ?? data.allergies,
+        };
+
+        // Re-render every dashboard surface that shows profile data
         await loadUserProfile();
         await loadDashboard();
-        alert('✅ Profile saved successfully!');
+        loadSettingsForm();
+
+        showSettingsToast('✅ Profile saved and dashboard updated!', 'success');
     } catch (e) {
-        currentUser = { ...currentUser, ...data };
+        // Fallback — apply locally so the dashboard still updates
+        currentUser = {
+            ...currentUser,
+            ...data,
+            dob: data.dob,
+        };
         await loadUserProfile();
         await loadDashboard();
-        alert('✅ Profile updated locally.');
+        loadSettingsForm();
+        showSettingsToast('Profile updated locally. Changes will sync when online.', 'warn');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Save Profile'; }
     }
 };
 
 function setText(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
+}
+
+function showSettingsToast(message, type = 'success') {
+    const existing = document.getElementById('settings-toast');
+    if (existing) existing.remove();
+
+    const colors = {
+        success: { bg: '#f0fdf4', border: '#86efac', text: '#166534' },
+        warn:    { bg: '#fffbeb', border: '#fcd34d', text: '#92400e' },
+        error:   { bg: '#fef2f2', border: '#fca5a5', text: '#991b1b' },
+    };
+    const c = colors[type] || colors.success;
+
+    const toast = document.createElement('div');
+    toast.id = 'settings-toast';
+    toast.style.cssText = `
+        position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+        background: ${c.bg}; border: 1px solid ${c.border}; color: ${c.text};
+        padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 500;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12); display: flex; align-items: center; gap: 8px;
+        animation: slideInToast .25s ease;
+    `;
+    toast.innerHTML = `
+        <style>@keyframes slideInToast{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}</style>
+        ${message}
+        <button onclick="this.closest('#settings-toast').remove()"
+          style="background:none;border:none;cursor:pointer;color:${c.text};font-size:15px;line-height:1;padding:0 0 0 6px;">×</button>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
 }
 
 function esc(str) {
@@ -1849,11 +1923,29 @@ window.generateSummary = async function() {
         const url = isRegen ? '/api/summary?bypass_cache=true' : '/api/summary';
         const res = await fetch(url, { headers: { 'X-Bypass-Cache': 'true' } });
         const data = await res.json();
-        const formatted = esc(data.summary)
-            .replace(/\\n/g, '<br>')
-            .replace(/#{1,3} (.+?)(?=<br>|$)/g, '<strong style="font-size:14px;color:var(--blue-800)">$1</strong>')
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // Render plain-text summary: strip any residual markdown chars first
+        let plain = data.summary || '';
+        plain = plain.replace(/[*_`~]/g, '');
+        plain = plain.replace(/^#{1,6}\s*/gm, '');
+        plain = plain.replace(/^[-•>]\s+/gm, '');
+
+        // HTML-escape the cleaned text
+        let escaped = plain
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        // Style plain-text section labels (e.g. "PATIENT OVERVIEW")
+        const sectionLabels = [
+            'PATIENT OVERVIEW','RECENT CLINICAL HISTORY','ACTIVE MEDICATIONS',
+            'KNOWN CONDITIONS','ALLERGIES','CURRENT MEDICATIONS','CLINICAL CONTEXT'
+        ];
+        const labelRe = new RegExp('(' + sectionLabels.join('|') + ')\\s*:?', 'g');
+        escaped = escaped.replace(labelRe,
+            '<strong style="display:block;margin-top:14px;margin-bottom:3px;font-size:12px;color:var(--blue-800);letter-spacing:0.06em;text-transform:uppercase;">$1</strong>'
+        );
+
+        // Convert newlines to line breaks
+        const formatted = escaped.replace(/\n/g, '<br>');
         content.innerHTML = `
           <div style="background:linear-gradient(135deg,var(--blue-50),#f0f9ff);padding:18px 20px;border-radius:var(--radius);border:1px solid var(--blue-200);line-height:1.75;font-size:13.5px;color:var(--neutral-800);">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--blue-200);">
