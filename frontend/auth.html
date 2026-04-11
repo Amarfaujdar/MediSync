@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSync — Authentication</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0; padding: 0; min-height: 100vh;
+      font-family: 'Outfit', 'DM Sans', sans-serif;
+      display: flex;
+      background: #0f172a;
+    }
+    .auth-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+      background: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80') center/cover;
+      opacity: 0.15;
+      mix-blend-mode: overlay;
+    }
+    .auth-brand {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; gap: 12px; margin-bottom: auto;
+    }
+    .brand-icon {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-text {
+      position: relative; z-index: 2;
+      margin-bottom: auto;
+    }
+    .hero-text h1 { font-size: 48px; font-weight: 700; max-width: 400px; line-height: 1.1; margin-bottom: 24px; }
+    .hero-text p { font-size: 18px; color: #94a3b8; max-width: 380px; line-height: 1.6; font-weight: 300; }
+    
+    .auth-right {
+      width: 540px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      padding: 60px;
+      overflow-y: auto;
+      box-shadow: -20px 0 40px rgba(0,0,0,0.2);
+    }
+    .auth-box { width: 100%; max-width: 400px; margin: auto; }
+    .auth-header { margin-bottom: 40px; }
+    .auth-header h2 { font-size: 32px; color: #0f172a; margin: 0 0 8px; font-weight: 600; }
+    .auth-header p { color: #64748b; margin: 0; font-size: 15px; }
+    .auth-header a { color: #3b82f6; text-decoration: none; font-weight: 500; cursor:pointer;}
+    .auth-header a:hover { text-decoration: underline; }
+    
+    .input-grp { margin-bottom: 20px; }
+    .input-grp label { display: block; font-size: 11.5px; font-weight: 600; color: #475569; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .input-grp input, .input-grp select {
+      width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0;
+      font-family: inherit; font-size: 15px; color: #1e293b; background: #f8fafc;
+      transition: all 0.2s; box-sizing: border-box; outline: none;
+    }
+    .input-grp input:focus, .input-grp select:focus {
+      background: white; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+    }
+    
+    .row-inputs { display: flex; gap: 16px; }
+    .row-inputs > div { flex: 1; }
+    
+    .btn-auth {
+      width: 100%; padding: 16px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white; font-family: inherit; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.2); margin-top: 12px;
+    }
+    .btn-auth:hover { box-shadow: 0 8px 20px rgba(37,99,235,0.3); transform: translateY(-1px); }
+    
+    .alert-box {
+      padding: 14px; border-radius: 10px; background: #fee2e2; border: 1px solid #fecaca;
+      color: #b91c1c; font-size: 14px; margin-bottom: 20px; display: none; align-items: center; gap: 8px;
+    }
+    
+    .hidden-view { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <span style="font-size:18px;font-weight:700;letter-spacing:-0.5px">MediSync</span>
+      </div>
+    </div>
+    
+    <div class="hero-text">
+      <h1>Your health.<br>Completely in sync.</h1>
+      <p>Upload your medical documents securely, let AI track your conditions, and take back control over your health history.</p>
+    </div>
+    
+    <div class="legal-text" style="color:rgba(255,255,255,0.4);font-size:13px">&copy; 2026 MediSync Platform. All data is end-to-end encrypted.</div>
+  </div>
+
+  <div class="auth-right">
+    
+    <!-- LOGIN VIEW -->
+    <div class="auth-box" id="login-view">
+      <div class="auth-header">
+        <h2>Welcome back</h2>
+        <p>Don't have an account? <a onclick="toggleView('register')">Create one now &rarr;</a></p>
+      </div>
+      
+      <div class="alert-box" id="login-err">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="login-err-msg">Invalid credentials</span>
+      </div>
+
+      <form id="login-form">
+        <div class="input-grp">
+          <label>Mobile Number</label>
+          <input type="text" id="log-phone" placeholder="+91 98765 43210" required>
+        </div>
+        <div class="input-grp">
+          <label>Password</label>
+          <input type="password" id="log-pass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-auth" id="btn-login">Sign In securely</button>
+      </form>
+    </div>
+
+    <!-- REGISTER VIEW -->
+    <div class="auth-box hidden-view" id="register-view" style="max-width:440px;">
+      <div class="auth-header">
+        <h2>Create Account</h2>
+        <p>Already have an account? <a onclick="toggleView('login')">Sign in &rarr;</a></p>
+      </div>
+      
+      <div class="alert-box" id="reg-err">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="reg-err-msg">Error</span>
+      </div>
+
+      <form id="register-form">
+        <div class="input-grp">
+          <label>Full Legal Name</label>
+          <input type="text" id="reg-name" placeholder="John Doe" required>
+        </div>
+        <div class="row-inputs">
+          <div class="input-grp">
+            <label>Mobile Number</label>
+            <input type="text" id="reg-phone" placeholder="+91 98765 43210" required>
+          </div>
+          <div class="input-grp">
+            <label>Date of Birth</label>
+            <input type="date" id="reg-dob" required>
+          </div>
+        </div>
+        <div class="row-inputs">
+          <div class="input-grp">
+            <label>Gender</label>
+            <select id="reg-gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="input-grp">
+            <label>Blood Group</label>
+            <select id="reg-blood">
+              <option value="O+">O+</option><option value="O-">O-</option>
+              <option value="A+">A+</option><option value="A-">A-</option>
+              <option value="B+">B+</option><option value="B-">B-</option>
+              <option value="AB+">AB+</option><option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="input-grp">
+          <label>Emergency Contact (Optional)</label>
+          <input type="text" id="reg-emergency" placeholder="+91XXXXXXXXXX">
+        </div>
+        <div class="input-grp">
+          <label>Password</label>
+          <input type="password" id="reg-pass" placeholder="Very secure password" required minlength="8">
+        </div>
+        <button type="submit" class="btn-auth" id="btn-reg">Create Health Vault</button>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleView(view) {
+      document.getElementById('login-view').classList.add('hidden-view');
+      document.getElementById('register-view').classList.add('hidden-view');
+      document.getElementById(view + '-view').classList.remove('hidden-view');
+    }
+
+    const API_BASE = '/auth';
+
+    // Login Form Submit
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loginBtn = document.getElementById('btn-login');
+      const errBox = document.getElementById('login-err');
+      
+      loginBtn.innerHTML = 'Authenticating...';
+      loginBtn.disabled = true;
+      errBox.style.display = 'none';
+
+      const bodyData = {
+        identifier: document.getElementById('log-phone').value,
+        password: document.getElementById('log-pass').value,
+        role: "patient"
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(()=>({detail: 'Invalid credentials'}));
+          throw new Error(data.detail || 'Login failed');
+        }
+
+        // Successfully logged in — the JWT is automatically set as httpOnly cookie in /auth/login
+        window.location.href = '/'; // Dashboard
+      } catch (err) {
+        errBox.style.display = 'flex';
+        document.getElementById('login-err-msg').textContent = err.message;
+      } finally {
+        loginBtn.innerHTML = 'Sign In securely';
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Register Form Submit
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const regBtn = document.getElementById('btn-reg');
+      const errBox = document.getElementById('reg-err');
+      
+      regBtn.innerHTML = 'Creating Account...';
+      regBtn.disabled = true;
+      errBox.style.display = 'none';
+
+      const bodyData = {
+        name: document.getElementById('reg-name').value,
+        phone: document.getElementById('reg-phone').value,
+        password: document.getElementById('reg-pass').value,
+        dob: document.getElementById('reg-dob').value,
+        gender: document.getElementById('reg-gender').value,
+        blood_group: document.getElementById('reg-blood').value,
+        emergency_contact: document.getElementById('reg-emergency').value 
+            ? { phone: document.getElementById('reg-emergency').value } 
+            : null,
+        allergies: "",
+        chronic_conditions: [],
+        role: "patient"
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/patient/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(()=>({detail: 'Registration failed'}));
+          throw new Error(data.detail || 'Something went wrong');
+        }
+        
+        // Successfully registered
+        window.location.href = '/'; 
+      } catch (err) {
+        errBox.style.display = 'flex';
+        document.getElementById('reg-err-msg').textContent = err.message;
+      } finally {
+        regBtn.innerHTML = 'Create Health Vault';
+        regBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

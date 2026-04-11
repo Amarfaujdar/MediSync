@@ -1,0 +1,230 @@
+/* ────────────────────────────────────────────────
+   MediRecord Premium Design Upgrade
+   Elevating Aesthetics with Theme Factory & Design Skills
+   ──────────────────────────────────────────────── */
+
+:root {
+  /* Premium Typography overriding standard fonts */
+  --font-heading: 'Outfit', -apple-system, sans-serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+
+  /* Rich, High-end Neutrals */
+  --neutral-100: #F3F5F9; /* Softer, slightly richer background */
+  --neutral-200: #E6EAF2;
+  --neutral-800: #192135;
+  --neutral-900: #0B1120;
+
+  /* Tech Innovation Blue Palette */
+  --blue-50: #EEF2FF;
+  --blue-100: #E0E7FF;
+  --blue-500: #6366F1;
+  --blue-600: #4338CA;
+  --blue-700: #3730A3;
+  
+  /* Elevating Radius for softer, premium feel */
+  --radius: 12px;
+  --radius-lg: 18px;
+
+  /* Enhanced Shadows for modern levitation */
+  --shadow-xs: 0 6px 14px rgba(11, 17, 32, 0.03), 0 2px 4px rgba(11, 17, 32, 0.02);
+  --shadow-sm: 0 12px 24px rgba(11, 17, 32, 0.04), 0 4px 8px rgba(11, 17, 32, 0.03);
+  --shadow-md: 0 20px 40px rgba(67, 56, 202, 0.08), 0 8px 16px rgba(11, 17, 32, 0.04);
+}
+
+html, body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, #F0F4FA 0%, #E2EAF4 100%);
+  background-attachment: fixed;
+  color: var(--neutral-800);
+}
+
+/* Override all headings to use the custom Display Font */
+h1, h2, h3, h4, h5, h6, 
+.brand-name, 
+.card-title, 
+.topnav-title, 
+.stat-number, 
+.risk-number, 
+.score-number-big {
+  font-family: var(--font-heading) !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ────────────────────────────────────────────────
+   GLASSMORPHISM & APP SHELL
+   ──────────────────────────────────────────────── */
+.sidebar {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+}
+
+.topnav {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.content-area {
+  background: transparent !important;
+}
+
+/* ────────────────────────────────────────────────
+   CARDS & CONTAINERS
+   ──────────────────────────────────────────────── */
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* ────────────────────────────────────────────────
+   BUTTONS & CONTROLS
+   ──────────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-body);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-600) 100%);
+  border: none;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+}
+
+.search-box {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.icon-btn {
+  box-shadow: var(--shadow-xs);
+  transition: all 0.25s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  color: var(--blue-600);
+}
+
+/* ────────────────────────────────────────────────
+   ANIMATIONS & MICRO-INTERACTIONS
+   ──────────────────────────────────────────────── */
+/* Elegant section reveal */
+.view-section {
+  animation: elegantFadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+  opacity: 0;
+  transform-origin: center top;
+}
+
+@keyframes elegantFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(15px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Sidebar Nav Hover Effect */
+.nav-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-50) 0%, transparent 100%);
+  z-index: -1;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  border-radius: var(--radius);
+}
+
+.nav-btn:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Active Patient Pulse */
+.active-patient-card:hover .patient-avatar {
+  animation: pulseAvatar 2s infinite;
+}
+
+@keyframes pulseAvatar {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+/* Brand Icon gradient pop */
+.brand-icon {
+  background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.35);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sidebar-brand:hover .brand-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Stat Cards Pop */
+.stat-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stat-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: var(--shadow-sm);
+  background: #ffffff;
+  border-color: var(--blue-100);
+}
+
+/* Staggered list items reveal (optional, applies if we dynamically inject children) */
+.card-header + div > * {
+  animation: fadeSlide 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.card-header + div > *:nth-child(1) { animation-delay: 0.05s; }
+.card-header + div > *:nth-child(2) { animation-delay: 0.1s; }
+.card-header + div > *:nth-child(3) { animation-delay: 0.15s; }
+.card-header + div > *:nth-child(4) { animation-delay: 0.2s; }
+.card-header + div > *:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}

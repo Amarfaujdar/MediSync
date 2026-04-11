@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediSync — Shared Patient Record</title>
+  <meta name="description" content="Secure, time-limited shared patient health record view." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50:  #eff6ff;
+      --blue-100: #dbeafe;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --green-50: #f0fdf4;
+      --green-500:#22c55e;
+      --green-600:#16a34a;
+      --red-50:   #fef2f2;
+      --red-500:  #ef4444;
+      --amber-50: #fffbeb;
+      --amber-500:#f59e0b;
+      --neutral-50:  #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--neutral-50);
+      color: var(--neutral-800);
+      min-height: 100vh;
+    }
+
+    /* ── Banner ── */
+    .share-banner {
+      background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
+      color: #fff;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .share-banner-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+    .share-banner-brand svg { opacity: .85; }
+    .share-banner-right { display: flex; align-items: center; gap: 16px; font-size: 13px; opacity: .85; }
+    .share-banner-expiry { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Main Layout ── */
+    .share-page { max-width: 860px; margin: 0 auto; padding: 32px 16px 80px; }
+
+    /* ── Watermark ── */
+    .share-watermark {
+      background: var(--blue-50);
+      border: 1px solid var(--blue-100);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--blue-700);
+    }
+    .share-watermark svg { flex-shrink: 0; }
+
+    /* ── Patient Hero Card ── */
+    .patient-hero {
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .patient-hero-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .patient-avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 22px; flex-shrink: 0;
+    }
+    .patient-name { font-size: 20px; font-weight: 700; color: var(--neutral-900); }
+    .patient-meta-line { font-size: 13px; color: var(--neutral-500); margin-top: 3px; }
+    .patient-vitals { display: flex; gap: 12px; flex-wrap: wrap; }
+    .vital-chip {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-200);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--neutral-700);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .vital-chip.allergy { background: var(--red-50); border-color: #fca5a5; color: var(--red-500); }
+
+    /* ── Section Cards ── */
+    .share-section {
+      background: #fff;
+      border: 1px solid var(--neutral-200);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .share-section-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--neutral-100);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--neutral-800);
+    }
+    .share-section-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .share-section-icon.blue   { background: var(--blue-50); }
+    .share-section-icon.green  { background: var(--green-50); }
+    .share-section-icon.amber  { background: var(--amber-50); }
+    .share-section-body { padding: 16px 20px; }
+
+    /* ── Conditions ── */
+    .cond-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cond-pill {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-200);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--neutral-700);
+      font-weight: 500;
+    }
+
+    /* ── Medications Table ── */
+    .med-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .med-table th {
+      text-align: left; font-weight: 600; font-size: 11px;
+      letter-spacing: .05em; text-transform: uppercase;
+      color: var(--neutral-400); padding: 0 0 10px;
+      border-bottom: 1px solid var(--neutral-200);
+    }
+    .med-table td { padding: 12px 0; border-bottom: 1px solid var(--neutral-100); vertical-align: top; }
+    .med-table tr:last-child td { border-bottom: none; }
+    .med-name-cell { font-weight: 600; color: var(--neutral-800); }
+    .med-status-chip {
+      display: inline-block;
+      padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .med-status-chip.current { background: var(--green-50); color: var(--green-600); }
+    .med-status-chip.past    { background: var(--neutral-100); color: var(--neutral-500); }
+
+    /* ── Lab Results ── */
+    .lab-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; border-bottom: 1px solid var(--neutral-100);
+      font-size: 13px;
+    }
+    .lab-row:last-child { border-bottom: none; }
+    .lab-value { font-weight: 600; color: var(--neutral-800); }
+    .lab-range { font-size: 12px; color: var(--neutral-400); margin-top: 2px; }
+    .lab-badge-normal   { background: var(--green-50); color: var(--green-600); padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+    .lab-badge-abnormal { background: var(--red-50);   color: var(--red-500);   padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+
+    /* ── Timeline Cards ── */
+    .tl-list { display: flex; flex-direction: column; gap: 0; }
+    .ev-card {
+      display: flex; gap: 0; padding: 0 0 20px 0;
+    }
+    .ev-card-left {
+      display: flex; flex-direction: column; align-items: center;
+      width: 44px; flex-shrink: 0; padding-top: 2px;
+    }
+    .tl-dot {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--blue-50); border: 2px solid var(--blue-100);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0; z-index: 1;
+    }
+    .tl-spine {
+      flex: 1; width: 2px; background: var(--neutral-100); margin-top: 6px;
+    }
+    .ev-card:last-child .tl-spine { display: none; }
+    .ev-card-body {
+      flex: 1; min-width: 0; background: #fff; border: 1px solid var(--neutral-200);
+      border-radius: 10px; padding: 14px 16px; margin-left: 8px; margin-bottom: 0;
+    }
+    .ev-card-header {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    }
+    .tl-item-title { font-weight: 700; color: var(--neutral-800); font-size: 13.5px; }
+    .tl-item-meta  { font-size: 11.5px; color: var(--neutral-400); margin-top: 3px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .ev-type-badge {
+      background: var(--blue-50); color: var(--blue-600); padding: 1px 8px;
+      border-radius: 999px; font-size: 10.5px; font-weight: 600;
+    }
+    .ev-doc-meta {
+      display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap;
+      font-size: 12px; color: var(--neutral-500);
+    }
+    .ev-diagnosis {
+      background: var(--blue-50); color: var(--blue-700); padding: 5px 10px;
+      border-radius: 6px; font-size: 12.5px; font-weight: 600; margin-top: 8px;
+    }
+    .ev-notes {
+      font-size: 12.5px; color: var(--neutral-600); margin-top: 8px;
+      line-height: 1.55; background: var(--neutral-50); border-radius: 6px;
+      padding: 8px 10px; border-left: 3px solid var(--blue-200);
+    }
+    .ev-sub-section { margin-top: 10px; }
+    .ev-sub-label { font-size: 11px; font-weight: 600; color: var(--neutral-400); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px; }
+    .ev-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .ev-chip {
+      font-size: 11.5px; padding: 2px 9px; border-radius: 999px; font-weight: 500;
+    }
+    .ev-chip.med { background: var(--green-50); color: var(--green-700); }
+    .ev-chip.normal { background: #f0fdf4; color: #166534; }
+    .ev-chip.abnormal { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .ev-thumb-wrap { flex-shrink: 0; }
+    .ev-thumb {
+      width: 68px; height: 68px; object-fit: cover; border-radius: 8px;
+      border: 1.5px solid var(--neutral-200); background: var(--neutral-100);
+    }
+    .conf-badge {
+      font-size: 10.5px; padding: 1px 7px; border-radius: 999px; font-weight: 600;
+    }
+    .conf-badge.verified { background: #f0fdf4; color: #16a34a; }
+    .conf-badge.low { background: #fff7ed; color: #c2410c; }
+
+    .evidence-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+    .evidence-hover:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+    /* ── Lightbox ── */
+    #img-preview-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s; padding: 20px;
+    }
+    #img-preview-modal.visible { display: flex; opacity: 1; }
+    .lightbox-box { position: relative; max-width: 900px; width: 100%; background: #fff; border-radius: 12px; overflow: hidden; }
+    .lightbox-img { width: 100%; max-height: 80vh; object-fit: contain; background: #f1f5f9; display: block; }
+    .modal-close { background: none; border: none; cursor: pointer; color: var(--neutral-500); padding: 4px; border-radius: 6px; }
+    .modal-close:hover { background: var(--neutral-100); color: var(--neutral-900); }
+    
+    .view-ev-btn {
+      margin-top: 10px; display: inline-flex; align-items: center; gap: 6px;
+      background: var(--neutral-800); color: #fff; border: none; border-radius: 6px;
+      padding: 6px 12px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .view-ev-btn:hover { background: #000; transform: translateY(-1px); }
+    
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); z-index: 1000; display: none;
+      justify-content: center; align-items: center; opacity: 0;
+      transition: opacity 0.2s; padding: 20px; box-sizing: border-box;
+    }
+    .modal-overlay.visible { display: flex; opacity: 1; }
+
+    /* ── Documents ── */
+    .doc-list { display: flex; flex-direction: column; gap: 8px; }
+    .doc-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--neutral-200);
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+    .doc-item-icon { font-size: 18px; padding-top: 1px; }
+    .doc-item-name { font-weight: 500; color: var(--neutral-800); }
+    .doc-item-sub  { font-size: 11.5px; color: var(--neutral-400); margin-top: 2px; }
+
+    /* ── States ── */
+    .share-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 80px 24px; text-align: center;
+    }
+    .share-state-icon { font-size: 52px; margin-bottom: 20px; }
+    .share-state h2   { font-size: 22px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px; }
+    .share-state p    { font-size: 14px; color: var(--neutral-500); max-width: 360px; line-height: 1.65; }
+
+    /* ── Loading Spinner ── */
+    .spinner {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 3px solid var(--neutral-200);
+      border-top-color: var(--blue-500);
+      animation: spin .7s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    .share-footer {
+      text-align: center; font-size: 12px; color: var(--neutral-400);
+      margin-top: 40px; padding-top: 20px;
+      border-top: 1px solid var(--neutral-200);
+    }
+    .share-footer strong { color: var(--neutral-600); }
+
+    @media (max-width: 600px) {
+      .share-banner-right { display: none; }
+      .patient-vitals { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Top Banner ─────────────────────────────────────── -->
+<div class="share-banner">
+  <div class="share-banner-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+    </svg>
+    MediSync — Shared Health Record
+  </div>
+  <div class="share-banner-right">
+    <div class="share-banner-expiry" id="banner-expiry">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Loading…
+    </div>
+    <div id="banner-views" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span id="view-count-text"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Page Content ───────────────────────────────────── -->
+<div class="share-page" id="share-page">
+  <!-- Loading State -->
+  <div class="share-state" id="state-loading">
+    <div class="spinner"></div>
+    <p style="color:var(--neutral-500);font-size:14px">Loading secure patient record…</p>
+  </div>
+</div>
+
+<script>
+  // ── Extract token from URL ────────────────────────────────────
+  function getTokenFromURL() {
+    // Handles both /share/<token> and /share_view.html?token=<token>
+    const parts = window.location.pathname.split('/');
+    const shareIdx = parts.indexOf('share');
+    if (shareIdx !== -1 && parts[shareIdx + 1]) return parts[shareIdx + 1];
+    return new URLSearchParams(window.location.search).get('token');
+  }
+
+  function fmtDate(str) {
+    if (!str) return '—';
+    const d = new Date(str);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  function fmtExpiry(str) {
+    if (!str) return '';
+    const d = new Date(str + (str.includes('Z') ? '' : 'Z'));
+    const now = new Date();
+    const diffH = Math.round((d - now) / 3600000);
+    if (diffH < 0) return 'Expired';
+    if (diffH < 24) return `Expires in ${diffH}h`;
+    return `Expires ${fmtDate(str)}`;
+  }
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function getEventEmoji(type) {
+    if (!type) return '📋';
+    const t = type.toLowerCase();
+    if (t.includes('prescription') || t.includes('med')) return '💊';
+    if (t.includes('lab') || t.includes('test'))         return '🧪';
+    if (t.includes('visit') || t.includes('consult'))    return '🩺';
+    if (t.includes('surgery'))                            return '🔬';
+    return '📋';
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function render(data) {
+    const page = document.getElementById('share-page');
+    const { meta, patient } = data;
+
+    // Update banner
+    document.getElementById('banner-expiry').innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ${esc(fmtExpiry(meta.expires_at))}`;
+
+    const agePart   = patient.age ? `${patient.age} yrs` : '';
+    const genPart   = patient.gender || '';
+    const bloodPart = patient.blood_group || '';
+    const metaLine  = [agePart, genPart, bloodPart].filter(Boolean).join(' · ');
+    const initials  = (patient.name || '?').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const allergies = (patient.allergies || '').split(',').map(s => s.trim()).filter(Boolean);
+
+    page.innerHTML = `
+      <!-- Watermark -->
+      <div class="share-watermark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Shared by <strong style="margin:0 4px">${esc(patient.name)}</strong> with <strong style="margin-left:4px">${esc(meta.recipient_name)}</strong> (${esc(meta.recipient_type)}) ·
+        <span style="margin-left:4px">${esc(fmtExpiry(meta.expires_at))}</span>
+      </div>
+
+      <!-- Patient Hero -->
+      <div class="patient-hero">
+        <div class="patient-hero-top">
+          <div class="patient-avatar">${esc(initials)}</div>
+          <div>
+            <div class="patient-name">${esc(patient.name)}</div>
+            <div class="patient-meta-line">${esc(metaLine) || 'Patient'}</div>
+          </div>
+        </div>
+        <div class="patient-vitals">
+          ${patient.blood_group ? `<div class="vital-chip">🩸 ${esc(patient.blood_group)}</div>` : ''}
+          ${patient.age ? `<div class="vital-chip">🎂 Age ${esc(String(patient.age))}</div>` : ''}
+          ${patient.gender ? `<div class="vital-chip">👤 ${esc(patient.gender)}</div>` : ''}
+          ${allergies.map(a => `<div class="vital-chip allergy">⚠️ ${esc(a)}</div>`).join('')}
+          ${patient.phone ? `<div class="vital-chip">📞 ${esc(patient.phone)}</div>` : ''}
+          ${patient.email ? `<div class="vital-chip">✉️ ${esc(patient.email)}</div>` : ''}
+        </div>
+      </div>
+
+      <!-- Sections rendered by JS below -->
+      <div id="sections-container"></div>
+
+      <div class="share-footer">
+        Powered by <strong>MediSync</strong> · This is a secure, read-only view ·
+        Access expires ${esc(fmtDate(meta.expires_at))}
+      </div>`;
+
+    const container = document.getElementById('sections-container');
+
+    // ── Conditions ─────────────────────────────────────────────
+    if (data.conditions !== undefined) {
+      const pills = data.conditions.length
+        ? data.conditions.map(c => `<div class="cond-pill">🔵 ${esc(c)}</div>`).join('')
+        : `<p style="color:var(--neutral-400);font-size:13px">No conditions recorded.</p>`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="share-section">
+          <div class="share-section-header">
+            <div class="share-section-icon blue">🏥</div> Conditions &amp; Diagnoses
+            <span style="margin-left:auto;font-size:12px;font-weight:normal;color:var(--neutral-400)">${data.conditions.length} condition${data.conditions.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="share-section-body">
+            <div class="cond-grid">${pills}</div>
+          </div>
+        </div>`);
+    }
+
+    // ── Medications ─────────────────────────────────────────────
+    if (data.medications !== undefined) {
+      const rows = data.medications.length
+        ? data.medications.map(m => `
+            <tr>
+              <td><div class="med-name-cell">💊 ${esc(m.med_name)}</div></td>
+              <td style="color:var(--neutral-600)">${esc(m.dosage || '—')}</td>
+              <td style="color:var(--neutral-600)">${esc(m.frequency || '—')}</td>
+              <td>${esc(m.duration || '—')}</td>
+              <td><span class="med-status-chip ${(m.status||'current').toLowerCase()}">${esc(m.status || 'Current')}</span></td>
+            </tr>`).join('')
+        : `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--neutral-400)">No medications shared.</td></tr>`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="share-section">
+          <div class="share-section-header">
+            <div class="share-section-icon green">💊</div> Current Medications
+            <span style="margin-left:auto;font-size:12px;font-weight:normal;color:var(--neutral-400)">${data.medications.length} medication${data.medications.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="share-section-body">
+            <table class="med-table">
+              <thead><tr>
+                <th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Status</th>
+              </tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>`);
+    }
+
+    // ── Lab Results ─────────────────────────────────────────────
+    if (data.lab_results !== undefined) {
+      const items = data.lab_results.length
+        ? data.lab_results.map(l => `
+            <div class="lab-row">
+              <div>
+                <div style="font-weight:500;color:var(--neutral-800)">${esc(l.test_name)}</div>
+                <div class="lab-range">${esc(l.reference_range || '')} ${esc(l.unit || '')}</div>
+                <div style="font-size:11.5px;color:var(--neutral-400);margin-top:2px">${esc(fmtDate(l.tested_on))}</div>
+              </div>
+              <div style="text-align:right">
+                <div class="lab-value">${esc(l.result_value || '—')}</div>
+                <div style="margin-top:4px">
+                  <span class="${l.is_abnormal ? 'lab-badge-abnormal' : 'lab-badge-normal'}">
+                    ${l.is_abnormal ? '⚠ Abnormal' : '✓ Normal'}
+                  </span>
+                </div>
+              </div>
+            </div>`).join('')
+        : `<p style="color:var(--neutral-400);font-size:13px">No lab results shared.</p>`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="share-section">
+          <div class="share-section-header">
+            <div class="share-section-icon green">🧪</div> Lab Results
+            <span style="margin-left:auto;font-size:12px;font-weight:normal;color:var(--neutral-400)">${data.lab_results.length} test${data.lab_results.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="share-section-body">${items}</div>
+        </div>`);
+    }
+
+    // ── Timeline ─────────────────────────────────────────────────
+    if (data.timeline !== undefined) {
+      const items = data.timeline.length
+        ? data.timeline.map(ev => {
+            const meds = ev.medications_list || [];
+            const labs = ev.lab_tests_list || [];
+            const medsHtml = meds.length
+              ? `<div class="ev-sub-section">
+                  <div class="ev-sub-label">💊 Medications at this visit</div>
+                  <div class="ev-chips">
+                    ${meds.map(m => `<span class="ev-chip med">${esc(m.name)}${m.dosage ? ` — ${esc(m.dosage)}` : ''}</span>`).join('')}
+                  </div>
+                </div>` : '';
+            const labsHtml = labs.length
+              ? `<div class="ev-sub-section">
+                  <div class="ev-sub-label">🧪 Lab results at this visit</div>
+                  <div class="ev-chips">
+                    ${labs.map(l => `<span class="ev-chip ${l.abnormal ? 'abnormal' : 'normal'}">${esc(l.name)}: ${esc(String(l.value))} ${esc(l.unit||'')}${l.abnormal ? ' ⚠' : ''}</span>`).join('')}
+                  </div>
+                </div>` : '';
+            const thumbHtml = ev.source_image_url
+              ? `<img class="ev-thumb" src="${esc(ev.source_image_url)}" alt="Document page" onerror="this.style.display='none'">`
+              : '';
+            const diagHtml = ev.diagnosis
+              ? `<div class="ev-diagnosis">🩺 ${esc(ev.diagnosis)}</div>` : '';
+            const docMeta = (ev.doctor_name || ev.hospital)
+              ? `<div class="ev-doc-meta">${ev.doctor_name ? `<span>👨‍⚕️ ${esc(ev.doctor_name)}</span>` : ''}${ev.hospital ? `<span>🏥 ${esc(ev.hospital)}</span>` : ''}</div>` : '';
+            const confBadge = (ev.confidence_score !== null && ev.confidence_score !== undefined && ev.confidence_score < 0.7)
+              ? `<span class="conf-badge low">⚠ Low confidence</span>` : '';
+            const verBadge = ev.is_verified
+              ? `<span class="conf-badge verified">✓ Verified</span>` : '';
+            
+            const evImageUrl = ev.source_page_img ? `/uploads/${ev.source_page_img}` : null;
+
+            return `
+            <div class="ev-card">
+              <div class="ev-card-left">
+                <div class="tl-dot">${getEventEmoji(ev.event_type)}</div>
+                <div class="tl-spine"></div>
+              </div>
+              <div class="ev-card-body">
+                <div class="ev-card-header">
+                  <div style="flex:1">
+                    <div class="tl-item-title">${esc(ev.title || '[No Title]')}</div>
+                    <div class="tl-item-meta">${esc(fmtDate(ev.event_date))} · <span class="ev-type-badge">${esc(ev.event_type || 'Event')}</span> ${verBadge} ${confBadge}</div>
+                    ${docMeta}
+                  </div>
+                  ${evImageUrl ? `
+                  <div class="ev-thumb-wrap evidence-hover" onclick="openImagePreview('${evImageUrl}')" style="position:relative">
+                    <img class="ev-thumb" src="${evImageUrl}" alt="Evidence thumbnail">
+                    <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.5);color:#fff;font-size:8px;padding:2px 4px;border-radius:4px">🔍</div>
+                  </div>` : ''}
+                </div>
+                ${diagHtml}
+                ${ev.description ? `<div class="ev-notes">${esc(ev.description)}</div>` : ''}
+                ${medsHtml}
+                ${labsHtml}
+                ${evImageUrl ? `
+                <button class="view-ev-btn" onclick="openImagePreview('${evImageUrl}')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  View Evidence
+                </button>` : ''}
+              </div>
+            </div>`;
+          }).join('')
+        : `<p style="color:var(--neutral-400);font-size:13px">No timeline events shared.</p>`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="share-section">
+          <div class="share-section-header">
+            <div class="share-section-icon blue">📅</div> Medical Timeline
+            <span style="margin-left:auto;font-size:12px;font-weight:normal;color:var(--neutral-400)">${data.timeline.length} event${data.timeline.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="share-section-body">
+            <div class="tl-list">${items}</div>
+          </div>
+        </div>`);
+    }
+
+    // ── Documents ─────────────────────────────────────────────────
+    if (data.documents !== undefined) {
+      const items = data.documents.length
+        ? data.documents.map(d => `
+            <div class="doc-item">
+              <div class="doc-item-icon">📄</div>
+              <div style="flex:1;min-width:0">
+                <div class="doc-item-name">${esc(d.filename)}</div>
+                <div class="doc-item-sub">
+                  ${esc(d.document_type || 'Document')} · ${esc(fmtDate(d.doc_date || d.date_uploaded))}
+                  ${d.doctor_name ? ` · 👨‍⚕️ ${esc(d.doctor_name)}` : ''}
+                  ${d.hospital ? ` · 🏥 ${esc(d.hospital)}` : ''}
+                </div>
+                ${d.diagnosis ? `<div style="font-size:11.5px;color:var(--blue-600);margin-top:3px">🩺 ${esc(d.diagnosis)}</div>` : ''}
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+                <span style="font-size:11px;background:var(--green-50);color:var(--green-600);padding:2px 10px;border-radius:999px;font-weight:600">${esc(d.status || 'Processed')}</span>
+                ${(d.confidence !== null && d.confidence !== undefined && d.confidence < 0.7) ? `<span style="font-size:10px;color:var(--amber-600)">⚠ Low AI confidence</span>` : ''}
+                <button onclick="verifyDocument('${d.id}')" style="margin-top:2px;font-size:10.5px;background:var(--blue-50);color:var(--blue-700);border:1px solid var(--blue-200);border-radius:4px;padding:2px 8px;cursor:pointer;font-weight:600">🛡️ Verify Record</button>
+              </div>
+            </div>`).join('')
+        : `<p style="color:var(--neutral-400);font-size:13px">No documents shared.</p>`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="share-section">
+          <div class="share-section-header">
+            <div class="share-section-icon amber">📁</div> Medical Documents
+            <span style="margin-left:auto;font-size:12px;font-weight:normal;color:var(--neutral-400)">${data.documents.length} document${data.documents.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="share-section-body">
+            <div class="doc-list">${items}</div>
+          </div>
+        </div>`);
+    }
+  }
+
+  // ── Error States ──────────────────────────────────────────────
+  function renderError(icon, title, message) {
+    document.getElementById('share-page').innerHTML = `
+      <div class="share-state">
+        <div class="share-state-icon">${icon}</div>
+        <h2>${title}</h2>
+        <p>${message}</p>
+      </div>`;
+  }
+
+  // ── Lightbox Logic ──────────────────────────────────────────
+  function openImagePreview(imgUrl) {
+    const modal = document.getElementById('img-preview-modal');
+    modal.querySelector('img').src = imgUrl;
+    modal.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImgPreview() {
+    const modal = document.getElementById('img-preview-modal');
+    modal.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  // ── Main ──────────────────────────────────────────────────────
+  async function main() {
+    const token = getTokenFromURL();
+    if (!token) {
+      renderError('🔒', 'Invalid Link', 'This share link is malformed. Please ask the patient to resend the link.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/share/${token}`);
+      if (res.status === 410) {
+        const body = await res.json();
+        const msg = (body.detail || '').toLowerCase().includes('revok')
+          ? 'The patient has revoked access to this record.'
+          : 'This share link has expired. Please ask the patient to generate a new one.';
+        renderError('⏰', 'Link No Longer Active', msg);
+        return;
+      }
+      if (res.status === 404) {
+        renderError('🔍', 'Link Not Found', 'This share link does not exist. Please verify the URL and try again.');
+        return;
+      }
+      if (!res.ok) {
+        renderError('⚠️', 'Something Went Wrong', `Server returned status ${res.status}. Please try again later.`);
+        return;
+      }
+
+      const data = await res.json();
+      render(data);
+
+    } catch (e) {
+      renderError('🌐', 'Connection Error', 'Unable to load the shared record. Please check your connection and try again.');
+    }
+  }
+
+  main();
+</script>
+
+<div id="img-preview-modal" onclick="if(event.target===this)closeImgPreview()">
+  <div class="lightbox-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--neutral-200)">
+      <h3 style="font-size:14px;font-weight:600;color:var(--neutral-800)">Medical Evidence Inspection</h3>
+      <button class="modal-close" onclick="closeImgPreview()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <img src="" class="lightbox-img" alt="Evidence">
+    <div style="padding:12px 20px;background:var(--neutral-50);border-top:1px solid var(--neutral-100);font-size:12px;color:var(--neutral-500)">
+      🔒 Secure MediSync Evidence Viewer
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

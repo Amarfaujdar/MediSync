@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSync — Personal All your health in Sync</title>
+  <meta name="description" content="AI-powered personal health record — upload, organize, and trace every medical document.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="premium.css">
+</head>
+<body>
+<div class="app-container">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <nav class="sidebar" id="sidebar">
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">MediSync</span>
+        <span class="brand-sub">All your health in Sync</span>
+      </div>
+    </div>
+
+    <!-- Active Patient -->
+    <div class="sidebar-section">
+      <p class="sidebar-section-label">ACTIVE PATIENT</p>
+      <div class="active-patient-card" id="active-patient-card">
+        <div class="patient-avatar" id="sidebar-avatar">SJ</div>
+        <div class="patient-info">
+          <h4 id="user-name">Loading…</h4>
+          <p id="user-meta">—</p>
+        </div>
+        <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Nav Links -->
+    <ul class="nav-links">
+      <li>
+        <a href="#" class="nav-btn active" id="nav-dashboard" data-target="dashboard-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-vault" data-target="vault-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          Upload Documents
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-history" data-target="history-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Medical History
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-timeline" data-target="timeline-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Timeline
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-bodymap" data-target="bodymap-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 20h13a2 2 0 0 0 2-2v-1a7 7 0 0 0-14 0v1a2 2 0 0 0 2 2h-3z"/></svg>
+          Body Map
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-predictions" data-target="predictions-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Predictions
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-sharing" data-target="sharing-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Sharing
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-btn" id="nav-settings" data-target="settings-view">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">v1.0 · Medical Grade</div>
+  </nav>
+
+  <!-- ══════════ CONTENT AREA ══════════ -->
+  <div class="content-wrapper">
+
+    <!-- ══════════ TOP NAVBAR ══════════ -->
+    <header class="topnav" id="topnav">
+      <div class="topnav-left">
+        <h1 class="topnav-title" id="topnav-title">Dashboard</h1>
+        <p class="topnav-sub" id="topnav-sub">Your health overview at a glance</p>
+      </div>
+      <div class="topnav-right">
+
+        <button id="chat-fab" onclick="toggleChatPanel()" title="Ask MediSync AI">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="chat-fab-label">Health AI</span>
+        </button>
+        <button class="icon-btn" id="notif-btn" title="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge hidden" id="notif-dot">1</span>
+        </button>
+        <button class="icon-btn" title="Profile" id="profile-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ══════════ MAIN CONTENT ══════════ -->
+    <main class="content-area">
+
+      <!-- ─── DASHBOARD ─── -->
+      <section id="dashboard-view" class="view-section">
+        <div class="view-body">
+
+          <!-- Patient Hero Banner -->
+          <div class="patient-hero" id="patient-hero">
+            <div class="patient-hero-inner">
+              <div class="patient-hero-avatar" id="hero-avatar">SJ</div>
+              <div class="patient-hero-info">
+                <h2 id="hero-name">Loading…</h2>
+                <p id="hero-meta">—</p>
+              </div>
+            </div>
+            <div class="hero-details-row">
+              <div class="hero-detail-group">
+                <span class="hero-detail-label">ALLERGIES</span>
+                <div class="tag-row" id="hero-allergies"></div>
+              </div>
+              <div class="hero-detail-group">
+                <span class="hero-detail-label">CHRONIC CONDITIONS</span>
+                <div class="tag-row" id="hero-conditions"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number blue" id="dash-stat-conditions">—</div>
+              <div class="stat-label">Active Conditions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number violet" id="dash-stat-meds">—</div>
+              <div class="stat-label">Current Medications</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number cyan" id="dash-stat-docs">—</div>
+              <div class="stat-label">Recent Documents</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number red" id="dash-stat-alerts">—</div>
+              <div class="stat-label">Risk Alerts</div>
+            </div>
+          </div>
+
+          <!-- Dashboard 2-col Grid -->
+          <div class="dash-grid">
+            <!-- Left / Main -->
+            <div class="dash-main-col">
+              <!-- AI Summary -->
+              <div class="card" id="dash-summary-card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon violet" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <h3 class="card-title">AI Health Summary</h3>
+                  </div>
+                  <button class="btn secondary sm" id="generate-summary-btn" onclick="generateSummary()">Generate AI Summary</button>
+                </div>
+                <div id="dash-summary-content" style="display:none;margin-top:12px;font-size:13px;line-height:1.6;color:var(--neutral-700)">
+                </div>
+              </div>
+
+              <!-- Current Medications -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="3"/><path d="m22 22-1.5-1.5"/></svg>
+                    <h3 class="card-title">Current Medications</h3>
+                  </div>
+                  <button class="btn-link" onclick="navigateTo('history-view','prescriptions-tab')">View All →</button>
+                </div>
+                <div id="dash-meds-list">
+                  <div class="shimmer" style="height:40px;margin-bottom:8px;"></div>
+                  <div class="shimmer" style="height:40px;width:80%;"></div>
+                </div>
+              </div>
+
+              <!-- Recent Documents -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon green" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <h3 class="card-title">Recent Documents</h3>
+                  </div>
+                  <button class="btn-link" onclick="navigateTo('vault-view')">Upload New →</button>
+                </div>
+                <div id="dash-docs-list">
+                  <div class="shimmer" style="height:52px;margin-bottom:8px;"></div>
+                  <div class="shimmer" style="height:52px;width:85%;"></div>
+                </div>
+              </div>
+
+              <!-- Upcoming Follow-ups -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon amber" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <h3 class="card-title">Upcoming Follow-ups</h3>
+                  </div>
+                  <button class="btn-link" onclick="openFollowUpModal()">+ Add →</button>
+                </div>
+                <div id="dash-followups-list"><p class="empty-msg">No upcoming follow-ups scheduled.</p></div>
+              </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="dash-right-col">
+              <!-- Health Alerts -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon red" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <h3 class="card-title">Health Alerts</h3>
+                  </div>
+                  <span class="badge-high" id="alert-badge">—</span>
+                </div>
+                <div id="dash-alerts-list">
+                  <div class="shimmer" style="height:54px;margin-bottom:8px;"></div>
+                  <div class="shimmer" style="height:54px;"></div>
+                </div>
+              </div>
+
+              <!-- Active Conditions -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <h3 class="card-title">Active Conditions</h3>
+                  </div>
+                  <button class="btn-link" onclick="navigateTo('history-view')">View All →</button>
+                </div>
+                <div id="dash-conditions-list"><p class="empty-msg">No conditions on record.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── UPLOAD DOCUMENTS ─── -->
+      <section id="vault-view" class="view-section hidden">
+        <div class="view-body">
+          <div class="vault-layout">
+            <!-- Left column -->
+            <div class="vault-left">
+              <!-- Upload Card -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                    <h3 class="card-title">Upload Medical Document</h3>
+                  </div>
+                </div>
+                <div class="upload-box" id="drop-zone">
+                  <form id="upload-form">
+                    <div class="upload-icon-wrap">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                    </div>
+                    <h4>Drag &amp; drop medical documents</h4>
+                    <p>Supports PDF, PNG, JPG, and TXT files</p>
+                    <div class="upload-type-badges">
+                      <span class="type-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        PDF
+                      </span>
+                      <span class="type-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        Image
+                      </span>
+                      <span class="type-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+                        Text
+                      </span>
+                    </div>
+                    <input type="file" id="file-input" hidden accept="image/*,.pdf">
+                    <button type="button" class="btn primary" onclick="document.getElementById('file-input').click()">Browse Files</button>
+                  </form>
+                </div>
+                <div id="upload-status" class="upload-status-bar hidden">
+                  <div class="loader"></div>
+                  <span>Agentic AI is extracting data from your document…</span>
+                </div>
+              </div>
+
+              <!-- Document Library -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon violet" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <h3 class="card-title">Document Library</h3>
+                  </div>
+                  <span class="card-count" id="vault-count">0 documents</span>
+                </div>
+                <div class="vault-list" id="vault-list"></div>
+              </div>
+            </div>
+
+            <!-- Right: Document Preview -->
+            <div class="vault-right">
+              <div class="card doc-preview-card" id="doc-preview-panel">
+                <div class="doc-preview-empty">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <h4>No Document Selected</h4>
+                  <p>Upload a document or select one from your library to view extracted data</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── MEDICAL HISTORY ─── -->
+      <section id="history-view" class="view-section hidden">
+        <div class="view-body">
+          <!-- Summary Stats -->
+          <div class="history-stats-row">
+            <div class="history-stat-card blue">
+              <div class="hs-number" id="hist-stat-conditions">—</div>
+              <div class="hs-label">Conditions</div>
+            </div>
+            <div class="history-stat-card violet">
+              <div class="hs-number" id="hist-stat-meds">—</div>
+              <div class="hs-label">Medications</div>
+            </div>
+            <div class="history-stat-card green">
+              <div class="hs-number" id="hist-stat-labs">—</div>
+              <div class="hs-label">Lab Tests</div>
+            </div>
+          </div>
+
+          <!-- Tabs + Table -->
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div class="history-tab-bar">
+              <div class="history-tabs">
+                <button class="history-tab active" data-htab="conditions-tab">
+                  Conditions <span class="tab-count" id="cond-count">0</span>
+                </button>
+                <button class="history-tab" data-htab="prescriptions-tab">
+                  Medications <span class="tab-count" id="meds-count">0</span>
+                </button>
+                <button class="history-tab" data-htab="labtests-tab">
+                  Lab Reports <span class="tab-count" id="labs-count">0</span>
+                </button>
+              </div>
+              <div class="history-tab-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="history-search" placeholder="Search…">
+              </div>
+            </div>
+
+            <!-- Conditions Table -->
+            <div id="conditions-tab" class="htab-content">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>CONDITION</th>
+                    <th>ICD CODE</th>
+                    <th>SINCE</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody id="conditions-list"></tbody>
+              </table>
+            </div>
+
+            <!-- Medications Tab -->
+            <div id="prescriptions-tab" class="htab-content hidden">
+              <div class="meds-grid" id="meds-grid"></div>
+            </div>
+
+            <!-- Lab Tests Tab -->
+            <div id="labtests-tab" class="htab-content hidden">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>TEST NAME</th>
+                    <th>DATE</th>
+                    <th>RESULT</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody id="labtests-list"></tbody>
+              </table>
+
+              <p class="section-micro-label" style="margin-top:24px;margin-left:16px;">MEDICAL IMAGES & SCANS</p>
+              <div id="lab-reports-images" style="padding:0 16px 16px; display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── TIMELINE ─── -->
+      <section id="timeline-view" class="view-section hidden">
+        <div class="view-body">
+          <div class="timeline-layout">
+            <div class="timeline-main">
+              <div class="card" style="padding:0;overflow:hidden;">
+                <div class="history-tab-bar">
+                  <div class="history-tabs">
+                    <button class="history-tab active" data-ttab="all-events-tab">All Events</button>
+                    <button class="history-tab" data-ttab="diagnoses-tab">Diagnoses</button>
+                    <button class="history-tab" data-ttab="medications-tab">Medications</button>
+                    <button class="history-tab" data-ttab="tests-tab">Tests</button>
+                    <button class="history-tab" data-ttab="documents-tab">Documents</button>
+                  </div>
+                </div>
+                <div id="all-events-tab" class="htab-content timeline-container"></div>
+                <div id="diagnoses-tab" class="htab-content hidden"><p class="empty-msg" style="padding:40px 0">No diagnosis events.</p></div>
+                <div id="medications-tab" class="htab-content hidden"><p class="empty-msg" style="padding:40px 0">No medication events.</p></div>
+                <div id="tests-tab" class="htab-content hidden"><p class="empty-msg" style="padding:40px 0">No test events.</p></div>
+                <div id="documents-tab" class="htab-content hidden"><p class="empty-msg" style="padding:40px 0">No document events.</p></div>
+              </div>
+            </div>
+            <div class="timeline-sidebar">
+              <div class="card" id="event-detail-panel">
+                <div class="event-detail-empty">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <h4>Select an Event</h4>
+                  <p>Click any timeline event to view source documents, notes, and related data</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── BODY MAP ─── -->
+      <section id="bodymap-view" class="view-section hidden">
+        <div class="view-body">
+          <div class="bodymap-layout">
+            <!-- Left: Body Figure -->
+            <div class="card bodymap-left">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 20h13"/></svg>
+                  <h3 class="card-title">Body Map</h3>
+                </div>
+                <span class="card-subtitle-text">Click region to explore</span>
+              </div>
+              <!-- SVG Body Figure -->
+              <div class="body-figure" style="padding: 20px 0;">
+                <svg viewBox="0 0 160 360" fill="none" xmlns="http://www.w3.org/2000/svg" class="body-svg" style="max-height: 440px; width: 100%; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.03));">
+                  <!-- Head & Neck -->
+                  <g class="body-region-svg" data-region="head" onclick="selectRegion('head')">
+                    <path d="M60 30 C60 5, 100 5, 100 30 C100 50, 90 60, 90 70 L70 70 C70 60, 60 50, 60 30 Z" fill="#EEF2FF" stroke="#6366F1" stroke-width="2"/>
+                    <circle id="indicator-head" cx="95" cy="25" r="4" fill="#6366F1" style="display:none;"/>
+                    <text x="80" y="45" text-anchor="middle" font-size="9" fill="#4338CA" font-family="Outfit,sans-serif" font-weight="600">Head</text>
+                  </g>
+
+                  <!-- Chest -->
+                  <g class="body-region-svg active-region" data-region="chest" onclick="selectRegion('chest')">
+                    <path d="M50 70 C65 60, 95 60, 110 70 L118 135 C90 145, 70 145, 42 135 Z" fill="#DBEAFE" stroke="#3B82F6" stroke-width="2"/>
+                    <circle id="indicator-chest_lungs" cx="110" cy="100" r="4" fill="#3B82F6" style="display:none;"/>
+                    <text x="80" y="110" text-anchor="middle" font-size="9" fill="#1D4ED8" font-family="Outfit,sans-serif" font-weight="600">Chest</text>
+                    <text x="80" y="122" text-anchor="middle" font-size="7" fill="#3B82F6" font-family="Outfit,sans-serif" font-weight="500">Lungs & Heart</text>
+                  </g>
+
+                  <!-- Abdomen -->
+                  <g class="body-region-svg" data-region="abdomen" onclick="selectRegion('abdomen')">
+                    <path d="M42 135 C70 145, 90 145, 118 135 L112 195 C95 205, 65 205, 48 195 Z" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+                    <circle id="indicator-abdomen" cx="106" cy="165" r="4" fill="#22C55E" style="display:none;"/>
+                    <text x="80" y="172" text-anchor="middle" font-size="9" fill="#15803D" font-family="Outfit,sans-serif" font-weight="600">Abdomen</text>
+                  </g>
+
+                  <!-- Arms Left & Right -->
+                  <g class="body-region-svg" data-region="arms" onclick="selectRegion('arms')">
+                    <!-- Left Arm -->
+                    <path d="M50 70 C25 75, 20 100, 15 150 C10 200, 22 210, 28 210 C32 210, 36 195, 34 150 L42 135 Z" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+                    <!-- Right Arm -->
+                    <path d="M110 70 C135 75, 140 100, 145 150 C150 200, 138 210, 132 210 C128 210, 124 195, 126 150 L118 135 Z" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+                    <circle id="indicator-arms" cx="140" cy="180" r="4" fill="#22C55E" style="display:none;"/>
+                    <text x="26" y="145" text-anchor="middle" font-size="7.5" fill="#15803D" font-family="Outfit,sans-serif" font-weight="600">Arms</text>
+                    <text x="134" y="145" text-anchor="middle" font-size="7.5" fill="#15803D" font-family="Outfit,sans-serif" font-weight="600">Arms</text>
+                  </g>
+
+                  <!-- Legs Left & Right -->
+                  <g class="body-region-svg" data-region="legs" onclick="selectRegion('legs')">
+                    <!-- Left Leg -->
+                    <path d="M48 195 C60 200, 75 205, 78 205 L68 345 C64 355, 48 355, 42 345 C38 310, 42 245, 48 195 Z" fill="#FFF7ED" stroke="#FED7AA" stroke-width="2"/>
+                    <!-- Right Leg -->
+                    <path d="M112 195 C100 200, 85 205, 82 205 L92 345 C96 355, 112 355, 118 345 C122 310, 118 245, 112 195 Z" fill="#FFF7ED" stroke="#FED7AA" stroke-width="2"/>
+                    <circle id="indicator-legs" cx="106" cy="280" r="4" fill="#C2410C" style="display:none;"/>
+                    <text x="56" y="280" text-anchor="middle" font-size="8.5" fill="#C2410C" font-family="Outfit,sans-serif" font-weight="600">Legs</text>
+                    <text x="104" y="280" text-anchor="middle" font-size="8.5" fill="#C2410C" font-family="Outfit,sans-serif" font-weight="600">Legs</text>
+                  </g>
+                </svg>
+              </div>
+              <!-- Region Legend -->
+              <div class="region-legend">
+                <div class="legend-title">Region Legend</div>
+                <div class="legend-sub">Data indicators</div>
+                <div class="legend-item"><div class="legend-box selected-box"></div> Selected region</div>
+                <div class="legend-item"><div class="legend-box has-data-box"></div> Has recorded data</div>
+                <div class="legend-item"><div class="legend-box no-data-box"></div> No data recorded</div>
+                <div class="legend-item"><div class="legend-dot-item"></div> Data indicator dot</div>
+              </div>
+            </div>
+
+            <!-- Right: Region Details -->
+            <div class="bodymap-right">
+              <div class="card" id="region-detail">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <h3 class="card-title" id="region-title">Chest &amp; Heart</h3>
+                  </div>
+                  <button class="btn secondary sm">+ Add Symptom</button>
+                </div>
+                <div id="region-content">
+                  <p class="section-micro-label">CONDITIONS</p>
+                  <div class="condition-row"><span class="cond-dot amber"></span> Hypertension</div>
+                  <div class="condition-row"><span class="cond-dot amber"></span> Mild LVH</div>
+                  <p class="section-micro-label" style="margin-top:16px">SYMPTOMS</p>
+                  <div class="symptom-row">
+                    <span class="cond-dot green"></span>
+                    <div class="symptom-info">
+                      <strong>Exertional dyspnea</strong>
+                      <span>Sep 15, 2024</span>
+                    </div>
+                    <span class="badge-status mild">mild</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Body region list cards -->
+              <div id="region-list-cards"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── PREDICTIONS ─── -->
+      <section id="predictions-view" class="view-section hidden">
+        <div class="view-body">
+          <!-- Risk Stat Cards -->
+          <div class="risk-stats-row">
+            <div class="risk-stat-card red"><div class="risk-number" id="pred-critical">0</div><div class="risk-label">Critical</div></div>
+            <div class="risk-stat-card orange"><div class="risk-number" id="pred-high">1</div><div class="risk-label">High Risk</div></div>
+            <div class="risk-stat-card amber"><div class="risk-number" id="pred-medium">3</div><div class="risk-label">Medium</div></div>
+            <div class="risk-stat-card green"><div class="risk-number" id="pred-low">1</div><div class="risk-label">Low Priority</div></div>
+          </div>
+
+          <!-- Filter Chips -->
+          <div class="filter-chips" id="pred-filter-chips">
+            <button class="chip active" data-filter="all">All Alerts</button>
+            <button class="chip" data-filter="critical">Critical</button>
+            <button class="chip" data-filter="high">High Risk</button>
+            <button class="chip" data-filter="medium">Medium</button>
+            <button class="chip" data-filter="risk">Risk Alerts</button>
+            <button class="chip" data-filter="conflict">Drug Conflicts</button>
+            <button class="chip" data-filter="reminder">Reminders</button>
+          </div>
+
+          <!-- Predictions Main + Sidebar -->
+          <div class="predictions-layout">
+            <div class="predictions-main">
+              <div id="predictions-list"></div>
+            </div>
+            <div class="predictions-sidebar">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <h3 class="card-title">Health Score</h3>
+                  </div>
+                </div>
+                <p class="card-subtitle-text" style="margin-bottom:20px">Overall risk assessment</p>
+                <div class="health-score-display">
+                  <div class="score-gauge">
+                    <svg viewBox="0 0 100 60" width="140" height="84">
+                      <path d="M10 55 A 40 40 0 0 1 90 55" fill="none" stroke="#E2E8F0" stroke-width="10" stroke-linecap="round"/>
+                      <path id="score-gauge-path" d="M10 55 A 40 40 0 0 1 90 55" fill="none" stroke="#F59E0B" stroke-width="10" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="126"/>
+                    </svg>
+                    <div class="score-number-big" id="overall-score-num">--</div>
+                  </div>
+                  <p class="score-out-of">out of 100</p>
+                  <span class="badge-warn" id="overall-score-badge" style="display:none;"></span>
+                </div>
+
+                <div class="score-breakdown" id="score-breakdown">
+                  <!-- Dynamically populated -->
+                </div>
+                <p class="score-disclaimer">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  Scores are AI estimates based on your medical records. Always consult your physician.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SHARING ─── -->
+      <section id="sharing-view" class="view-section hidden">
+        <div class="view-body">
+          <div class="sharing-layout">
+            <!-- Create Share Link -->
+            <div class="sharing-main">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <div>
+                      <h3 class="card-title">Create Share Link</h3>
+                      <p class="card-subtitle-text">Grant secure access to your records</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="share-type-tabs">
+                  <button class="share-type-btn active" onclick="selectShareType(this,'Doctor')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Doctor
+                  </button>
+                  <button class="share-type-btn" onclick="selectShareType(this,'Hospital')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Hospital
+                  </button>
+                  <button class="share-type-btn" onclick="selectShareType(this,'Caregiver')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    Caregiver
+                  </button>
+                </div>
+
+                <div class="field-group" style="margin:16px 0 12px">
+                  <label>Recipient Name</label>
+                  <input type="text" placeholder="Enter name…" id="share-name-input">
+                </div>
+
+                <p class="section-micro-label">DATA PERMISSIONS</p>
+                <div class="permission-list">
+                  <div class="permission-row active">
+                    <span>Conditions</span>
+                    <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                  </div>
+                  <div class="permission-row active">
+                    <span>Medications</span>
+                    <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                  </div>
+                  <div class="permission-row">
+                    <span>Documents</span>
+                    <div class="toggle-switch" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                  </div>
+                  <div class="permission-row active">
+                    <span>Timeline</span>
+                    <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                  </div>
+                  <div class="permission-row active">
+                    <span>Lab Tests</span>
+                    <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                  </div>
+                </div>
+
+                <!-- Expiry Selector -->
+                <div class="field-group" style="margin-top:16px">
+                  <label>LINK EXPIRY</label>
+                  <select id="share-expiry-select" style="border:1px solid var(--neutral-200);border-radius:var(--radius);padding:9px 12px;font-size:13px;color:var(--neutral-800);width:100%;background:#fff;outline:none;cursor:pointer">
+                    <option value="24">24 hours — Quick consult</option>
+                    <option value="72">3 days — Short-term access</option>
+                    <option value="168" selected>7 days — Recommended</option>
+                    <option value="720">30 days — Extended access</option>
+                  </select>
+                </div>
+
+                <button class="btn primary" style="width:100%;justify-content:center;margin-top:16px" id="gen-link-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  🔗 Generate Secure Share Link
+                </button>
+              </div>
+
+              <!-- Security & Privacy -->
+              <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon green" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <h3 class="card-title">Security &amp; Privacy</h3>
+                  </div>
+                </div>
+                <div class="security-list">
+                  <div class="security-item">
+                    <div class="security-check-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <strong>End-to-end encrypted</strong>
+                      <p>All shared data is encrypted in transit and at rest</p>
+                    </div>
+                  </div>
+                  <div class="security-item">
+                    <div class="security-check-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <strong>Revocable at any time</strong>
+                      <p>Immediately revoke access from any recipient</p>
+                    </div>
+                  </div>
+                  <div class="security-item">
+                    <div class="security-check-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <strong>Audit trail</strong>
+                      <p>Every access is logged and timestamped</p>
+                    </div>
+                  </div>
+                  <div class="security-item">
+                    <div class="security-check-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <strong>Permission scoped</strong>
+                      <p>Recipients can only view data you explicitly grant</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Shares -->
+            <div class="sharing-sidebar">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <h3 class="card-title">Active Shares</h3>
+                  </div>
+                  <span class="badge-info" id="active-shares-count">0 active</span>
+                </div>
+                <div id="active-shares-list"><p class="empty-msg">No active shares yet.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SETTINGS ─── -->
+      <section id="settings-view" class="view-section hidden">
+        <div class="view-body">
+          <div class="settings-layout">
+            <!-- Profile Information -->
+            <div class="card settings-card">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <svg class="card-icon blue" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <h3 class="card-title">Profile Information</h3>
+                </div>
+              </div>
+              <div class="settings-form">
+                <div class="edit-grid">
+                  <div class="field-group">
+                    <label>FULL NAME</label>
+                    <input type="text" id="set-name" placeholder="Sarah Johnson">
+                  </div>
+                  <div class="field-group">
+                    <label>DATE OF BIRTH</label>
+                    <input type="date" id="set-dob" placeholder="1982-03-15">
+                  </div>
+                </div>
+                <div class="edit-grid">
+                  <div class="field-group">
+                    <label>GENDER</label>
+                    <select id="set-gender">
+                      <option value="">Select gender…</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Non-binary">Non-binary</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label>BLOOD GROUP</label>
+                    <input type="text" id="set-blood" placeholder="A+">
+                  </div>
+                </div>
+                <div class="edit-grid">
+                  <div class="field-group">
+                    <label>PHONE</label>
+                    <input type="tel" id="set-phone" placeholder="+1 (555) 234-5678">
+                  </div>
+                  <div class="field-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="set-email" placeholder="patient@email.com">
+                  </div>
+                </div>
+                <div class="edit-grid">
+                  <div class="field-group">
+                    <label>ALLERGIES <span style="font-weight:400;text-transform:none;color:var(--neutral-400)">(comma separated)</span></label>
+                    <input type="text" id="set-allergies" placeholder="Penicillin, Sulfa drugs">
+                  </div>
+                  <div class="field-group">
+                    <label>CHRONIC CONDITIONS</label>
+                    <input type="text" id="set-conditions" placeholder="Type 2 Diabetes, Hypertension">
+                  </div>
+                </div>
+                <div class="edit-grid">
+                  <div class="field-group">
+                    <label>INSURANCE PROVIDER</label>
+                    <input type="text" id="set-insurance" placeholder="e.g. BlueCross BlueShield">
+                  </div>
+                  <div class="field-group">
+                    <label>INSURANCE ID</label>
+                    <input type="text" id="set-insurance-id" placeholder="e.g. XYZ123456789">
+                  </div>
+                </div>
+                <button class="btn primary" onclick="saveSettings()">Save Profile</button>
+              </div>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="card settings-card" style="margin-top:16px">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <svg class="card-icon amber" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  <h3 class="card-title">Notification Preferences</h3>
+                </div>
+              </div>
+              <div class="notif-pref-list">
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Medication Reminders</strong>
+                    <p>Daily reminders for active medications</p>
+                  </div>
+                  <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Lab Result Alerts</strong>
+                    <p>Notify when test results are uploaded or available</p>
+                  </div>
+                  <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Health Risk Alerts</strong>
+                    <p>AI-powered risk notifications and warnings</p>
+                  </div>
+                  <div class="toggle-switch on" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Appointment Reminders</strong>
+                    <p>Upcoming follow-ups and check-up notifications</p>
+                  </div>
+                  <div class="toggle-switch" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data & Privacy -->
+            <div class="card settings-card" style="margin-top:16px">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <svg class="card-icon green" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <h3 class="card-title">Data &amp; Privacy</h3>
+                </div>
+              </div>
+              <div class="notif-pref-list">
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Analytics Sharing</strong>
+                    <p>Share anonymized data to improve AI health models</p>
+                  </div>
+                  <div class="toggle-switch" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="notif-pref-row">
+                  <div>
+                    <strong>Research Participation</strong>
+                    <p>Opt-in to contribute to health research programs</p>
+                  </div>
+                  <div class="toggle-switch" onclick="togglePermission(this)"><div class="toggle-thumb"></div></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--neutral-100)">
+                <button class="btn secondary sm">Export All Data</button>
+                <button class="btn danger sm">Delete Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+<!-- ══════════ AI CHATBOT RIGHT DRAWER ══════════ -->
+<div class="chat-backdrop" id="chat-backdrop" onclick="toggleChatPanel()"></div>
+
+<div id="chat-panel" class="chat-panel">
+  <div class="chat-panel-header">
+    <div class="chat-panel-title">
+      <div class="chat-avatar-icon">🩺</div>
+      <div>
+        <div style="font-weight:600;font-size:14px;color:var(--neutral-800)">MediSync AI</div>
+        <div style="font-size:11px;color:var(--green-600);font-weight:500">● Online · Knows your full record</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button onclick="clearChatHistory()" title="Clear history" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--neutral-400);border-radius:4px" onmouseover="this.style.background='var(--neutral-100)'" onmouseout="this.style.background='none'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+      <button onclick="toggleChatPanel()" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--neutral-400);border-radius:4px" onmouseover="this.style.background='var(--neutral-100)'" onmouseout="this.style.background='none'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-welcome">
+      <div style="font-size:28px;margin-bottom:8px">👋</div>
+      <div style="font-weight:600;color:var(--neutral-800);margin-bottom:4px">Hello! I'm your Health AI</div>
+      <div style="font-size:12.5px;color:var(--neutral-500);line-height:1.5">I have full access to your uploaded medical records. Ask me anything about your conditions, medications, lab results or follow-ups.</div>
+      <div class="chat-suggestions" id="chat-suggestions">
+        <button class="chat-suggestion-chip" onclick="sendSuggestion('What are my active medications?')">💊 My medications</button>
+        <button class="chat-suggestion-chip" onclick="sendSuggestion('Summarize my health history')">📋 Health summary</button>
+        <button class="chat-suggestion-chip" onclick="sendSuggestion('Do I have any abnormal lab results?')">🧪 Lab results</button>
+        <button class="chat-suggestion-chip" onclick="sendSuggestion('What are my upcoming follow-ups?')">📅 Follow-ups</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask about your health records…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage()}" />
+    <button id="chat-send-btn" onclick="sendChatMessage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ FOLLOW-UP MODAL ══════════ -->
+<div class="modal-overlay" id="followup-modal" onclick="if(event.target===this)closeFollowUpModal()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <h3 id="fu-modal-title">Add Follow-up Appointment</h3>
+      <button class="modal-close" onclick="closeFollowUpModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="fu-edit-id">
+    <div class="modal-body">
+      <div class="edit-grid">
+        <div class="field-group" style="grid-column:1/-1">
+          <label>APPOINTMENT TITLE</label>
+          <input type="text" id="fu-title" placeholder="e.g. Cardiology Follow-up">
+        </div>
+        <div class="field-group">
+          <label>DATE</label>
+          <input type="date" id="fu-date">
+        </div>
+        <div class="field-group">
+          <label>STATUS</label>
+          <select id="fu-status">
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="missed">Missed</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>DOCTOR</label>
+          <input type="text" id="fu-doctor" placeholder="Dr. Name">
+        </div>
+        <div class="field-group">
+          <label>HOSPITAL / CLINIC</label>
+          <input type="text" id="fu-hospital" placeholder="Clinic / Hospital">
+        </div>
+        <div class="field-group" style="grid-column:1/-1">
+          <label>NOTES</label>
+          <input type="text" id="fu-notes" placeholder="Any important notes…">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn secondary sm" onclick="closeFollowUpModal()">Cancel</button>
+      <button class="btn primary sm" onclick="saveFollowUp()">Save Appointment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ EDIT MEDICATION MODAL ══════════ -->
+<div class="modal-overlay" id="edit-med-modal" onclick="if(event.target===this)closeMedModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-size:16px;font-weight:600;color:var(--neutral-800)">Edit Medication</h3>
+      <button class="modal-close" onclick="closeMedModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="med-edit-id">
+    <div class="modal-body">
+      <div class="edit-grid">
+        <div class="field-group" style="grid-column:1/-1">
+          <label>MEDICATION NAME</label>
+          <input type="text" id="med-edit-name" placeholder="Name">
+        </div>
+        <div class="field-group">
+          <label>DOSAGE</label>
+          <input type="text" id="med-edit-dosage" placeholder="e.g. 500mg">
+        </div>
+        <div class="field-group">
+          <label>FREQUENCY</label>
+          <input type="text" id="med-edit-freq" placeholder="e.g. Twice daily">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn secondary sm" onclick="closeMedModal()">Cancel</button>
+      <button class="btn primary sm" onclick="saveMedication()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+.tmp/
+.env
+.data/
+credentials.json
+token.json
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+node_modules/
+react-ui/node_modules/
+*.db
+auth.db
+*.log
+.DS_Store
+Thumbs.db
